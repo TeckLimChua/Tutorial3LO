@@ -7,9 +7,7 @@ package seedu.addressbook;
  * ====================================================================
  */
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
@@ -210,7 +208,7 @@ public class AddressBook {
      * ====================================================================
      */
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         showWelcomeMessage();
         processProgramArgs(args);
         loadDataFromStorage();
@@ -368,7 +366,7 @@ public class AddressBook {
      * @param userInputString  raw input from user
      * @return  feedback about how the command was executed
      */
-    private static String executeCommand(String userInputString) {
+    private static String executeCommand(String userInputString) throws IOException {
         final String[] commandTypeAndParams = splitCommandWordAndArgs(userInputString);
         final String commandType = commandTypeAndParams[0];
         final String commandArgs = commandTypeAndParams[1];
@@ -395,7 +393,22 @@ public class AddressBook {
         }
     }
 
-    private static String executeSortAddressBook() {
+    private static String executeSortAddressBook() throws IOException {
+        ArrayList<String> rows = new ArrayList<String>();
+        BufferedReader reader = new BufferedReader(new FileReader(storageFilePath));
+
+        String s;
+        while((s = reader.readLine())!=null)
+            rows.add(s);
+
+        Collections.sort(rows);
+
+        FileWriter writer = new FileWriter(storageFilePath);
+        for(String cur: rows)
+            writer.write(cur+ System.lineSeparator());
+
+        reader.close();
+        writer.close();
         return "Address Book has been sorted.";
     }
     /**
